@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAJU SmartLearn - Muhsin Ali</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Sage Green Palette */
+            --sage-50: #F4F7F4;
+            --sage-100: #E3EBE3;
+            --sage-200: #C5D8C5;
+            --sage-300: #9BBF9B;
+            --sage-400: #72A072;
+            --sage-500: #528552;
+            --sage-600: #3D6B3D;
+            --sage-700: #2D522D;
+            --sage-800: #244224;
+            --sage-900: #1E361E;
+            
+            --bg-body: var(--sage-50);
+            --bg-card: #FFFFFF;
+            --text-primary: #1A2E1A;
+            --text-secondary: #5A6B5A;
+            --text-muted: #8A9A8A;
+            
+            --border: 1px solid rgba(45, 82, 45, 0.1);
+            --border-strong: 1px solid rgba(45, 82, 45, 0.2);
+            
+            --shadow-sm: 0 1px 3px rgba(45, 82, 45, 0.04);
+            --shadow-md: 0 4px 12px rgba(45, 82, 45, 0.06);
+            --shadow-lg: 0 12px 32px rgba(45, 82, 45, 0.08);
+            --shadow-hover: 0 16px 40px rgba(45, 82, 45, 0.12);
+            
+            --radius: 20px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-in {
+            animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+
+        .delay-1 { animation-delay: 0.05s; }
+        .delay-2 { animation-delay: 0.1s; }
+        .delay-3 { animation-delay: 0.15s; }
+        .delay-4 { animation-delay: 0.2s; }
+        .delay-5 { animation-delay: 0.25s; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: var(--border);
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: var(--transition);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 36px 28px;
+            border-bottom: var(--border);
+        }
+
+        .sidebar-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--sage-800);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-header .meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .sidebar-header .meta strong {
+            color: var(--sage-600);
+            font-weight: 600;
+        }
+
+        .nav-menu { list-style: none; padding: 20px 16px; }
+        .nav-item { margin-bottom: 2px; }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 14px;
+            padding: 12px 16px; text-decoration: none;
+            color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;
+            border-radius: 14px; transition: var(--transition); cursor: pointer;
+        }
+
+        .nav-link i { width: 20px; font-size: 1rem; color: var(--sage-300); transition: var(--transition); }
+        .nav-link:hover { background: var(--sage-50); color: var(--sage-700); }
+        .nav-link:hover i { color: var(--sage-500); }
+        
+        .nav-link.active {
+            background: linear-gradient(135deg, var(--sage-100) 0%, var(--sage-200) 100%);
+            color: var(--sage-800); font-weight: 600;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5);
+        }
+        .nav-link.active i { color: var(--sage-600); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px; flex: 1; padding: 48px; max-width: calc(100% - 280px);
+        }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: scaleIn 0.4s ease-out; }
+
+        .page-header { margin-bottom: 40px; }
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem; font-weight: 700; color: var(--sage-800);
+            margin-bottom: 8px; letter-spacing: -0.5px;
+        }
+        .page-subtitle { font-size: 1.05rem; color: var(--text-secondary); font-weight: 400; }
+
+        /* IMPROVED MODULAR GRID SYSTEM */
+        .modular-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .col-12 { grid-column: span 12; }
+        .col-8 { grid-column: span 8; }
+        .col-7 { grid-column: span 7; }
+        .col-6 { grid-column: span 6; }
+        .col-5 { grid-column: span 5; }
+        .col-4 { grid-column: span 4; }
+
+        /* Enhanced Cards */
+        .card {
+            background: var(--bg-card);
+            border: var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .card::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--sage-300), var(--sage-500));
+            opacity: 0; transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--sage-200);
+        }
+        .card:hover::after { opacity: 1; }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; padding-bottom: 16px;
+            border-bottom: var(--border);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem; font-weight: 600; color: var(--sage-800);
+        }
+
+        .badge {
+            display: inline-flex; align-items: center; padding: 5px 14px;
+            border-radius: 999px; font-size: 0.7rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .badge-success { background: var(--sage-100); color: var(--sage-700); }
+        .badge-warning { background: #FEF9C3; color: #854D0E; }
+        .badge-danger { background: #FEE2E2; color: #991B1B; }
+
+        /* Tables */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .data-table th {
+            text-align: left; padding: 14px 16px; font-size: 0.7rem;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+            color: var(--text-muted); border-bottom: var(--border-strong);
+        }
+        .data-table td {
+            padding: 16px; border-bottom: var(--border); color: var(--text-primary);
+            vertical-align: middle;
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--sage-50); }
+
+        /* Progress Bars */
+        .progress-container { margin-bottom: 24px; }
+        .progress-label {
+            display: flex; justify-content: space-between; margin-bottom: 10px;
+            font-size: 0.9rem; font-weight: 500;
+        }
+        .progress-track {
+            width: 100%; height: 6px; background: var(--sage-100);
+            border-radius: 999px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; border-radius: 999px;
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            background: linear-gradient(90deg, var(--sage-300), var(--sage-500));
+        }
+
+        /* AI Insight Box */
+        .ai-insight {
+            background: linear-gradient(135deg, var(--sage-50) 0%, var(--sage-100) 100%);
+            border-left: 4px solid var(--sage-500);
+            padding: 20px 24px; border-radius: 0 16px 16px 0;
+            margin-top: 20px; animation: scaleIn 0.5s ease-out;
+        }
+        .ai-insight-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+        }
+        .ai-insight-header i { color: var(--sage-500); font-size: 0.9rem; }
+        .ai-insight-header strong {
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--sage-700); font-weight: 700;
+        }
+        .ai-insight p { font-size: 0.95rem; color: var(--text-primary); line-height: 1.7; margin: 0; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 24px; font-family: inherit; font-size: 0.85rem;
+            font-weight: 600; border: none; border-radius: 14px;
+            cursor: pointer; transition: var(--transition); text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--sage-500) 0%, var(--sage-600) 100%);
+            color: white; box-shadow: var(--shadow-md);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .btn-outline {
+            background: transparent; border: 1px solid var(--sage-200); color: var(--sage-600);
+        }
+        .btn-outline:hover { background: var(--sage-50); border-color: var(--sage-300); }
+        .btn-sm { padding: 8px 16px; font-size: 0.8rem; }
+        .btn-block { width: 100%; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30, 54, 30, 0.3); backdrop-filter: blur(8px);
+            z-index: 1000; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal {
+            background: var(--bg-card); border-radius: var(--radius); padding: 36px;
+            width: 90%; max-width: 520px; box-shadow: var(--shadow-lg);
+            transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+        .modal-header { margin-bottom: 28px; }
+        .modal-header h3 {
+            font-family: 'Playfair Display', serif; font-size: 1.6rem;
+            color: var(--sage-800); margin-bottom: 8px;
+        }
+        .modal-header p { color: var(--text-secondary); font-size: 0.95rem; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; font-size: 0.8rem; font-weight: 600;
+            color: var(--text-primary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .form-control {
+            width: 100%; padding: 14px 16px; border: 1px solid var(--border);
+            border-radius: 14px; font-family: inherit; font-size: 0.95rem;
+            background: var(--bg-card); transition: var(--transition);
+        }
+        .form-control:focus { outline: none; border-color: var(--sage-400); box-shadow: 0 0 0 4px var(--sage-100); }
+        .modal-footer { display: flex; gap: 12px; margin-top: 28px; }
+
+        /* Mobile Toggle */
+        .mobile-toggle {
+            display: none; position: fixed; top: 24px; right: 24px; z-index: 200;
+            background: var(--bg-card); border: var(--border); padding: 14px;
+            border-radius: 14px; cursor: pointer; box-shadow: var(--shadow-md);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .col-8, .col-7, .col-5 { grid-column: span 12; }
+            .col-6, .col-4 { grid-column: span 6; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); box-shadow: var(--shadow-lg); }
+            .main-content { margin-left: 0; max-width: 100%; padding: 24px; padding-top: 80px; }
+            .mobile-toggle { display: block; }
+            .col-6, .col-4 { grid-column: span 12; }
+            .card { padding: 24px; }
+            .page-title { font-size: 1.8rem; }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block; width: 18px; height: 18px;
+            border: 2px solid var(--sage-200); border-radius: 50%;
+            border-top-color: white; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Muhsin Ali</h2>
+            <div class="meta">
+                <div><strong>ID:</strong> FA26-BSAI-0069</div>
+                <div><strong>Semester:</strong> 1st</div>
+                <div><strong>Email:</strong> fa26bsai0069@maju.edu.pk</div>
+            </div>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a class="nav-link active" onclick="showPage('dashboard', this)"><i class="fas fa-th-large"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('profile', this)"><i class="fas fa-user"></i> Profile</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('courses', this)"><i class="fas fa-book-open"></i> Enrolled Courses</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('attendance', this)"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('results', this)"><i class="fas fa-chart-line"></i> Results</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('timetable', this)"><i class="fas fa-clock"></i> Time Table</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('invoices', this)"><i class="fas fa-file-invoice-dollar"></i> Invoices</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('library', this)"><i class="fas fa-book"></i> Library</a></li>
+            <li class="nav-item"><a class="nav-link" onclick="showPage('notifications', this)"><i class="fas fa-bell"></i> Notifications</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- DASHBOARD -->
+        <section id="dashboard" class="page-section active">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Welcome back, Muhsin. Your personalized academic overview for today.</p>
+            </div>
+
+            <div class="modular-grid">
+                <!-- Welcome Banner -->
+                <div class="card col-12 animate-in delay-1">
+                    <div class="card-header">
+                        <span class="card-title">Welcome to Your 1st Semester</span>
+                        <span class="badge badge-success">Active Student</span>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.8;">
+                        Your journey in BS Artificial Intelligence has begun. You are currently enrolled in 7 courses and maintaining a strong foundation. 
+                        Keep up the excellent work in Calculus & Analytical Geometry, and let's focus on strengthening your Computer Programming skills this week.
+                    </p>
+                </div>
+
+                <!-- Action Required (Asymmetric Left) -->
+                <div class="card col-5 animate-in delay-2">
+                    <div class="card-header">
+                        <span class="card-title">Action Required</span>
+                        <span class="badge badge-warning">1 Pending</span>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.7;">
+                        You were absent for <strong>AICT Lab</strong> on Nov 10. An interactive practical session was conducted that requires hands-on participation.
+                    </p>
+                    <button class="btn btn-primary btn-block" onclick="openModal()">
+                        <i class="fas fa-magic"></i> Report & Catch Up
+                    </button>
+                </div>
+
+                <!-- Focus Time (Asymmetric Right) -->
+                <div class="card col-7 animate-in delay-2">
+                    <div class="card-header">
+                        <span class="card-title">Smart Focus Time</span>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 0.95rem;">
+                        You have a free block today from <strong style="color: var(--sage-700);">01:00 PM – 02:30 PM</strong>.
+                    </p>
+                    <div class="ai-insight">
+                        <div class="ai-insight-header">
+                            <i class="fas fa-sparkles"></i>
+                            <strong>AI Recommendation</strong>
+                        </div>
+                        <p>This is the ideal time to review "Variables and Data Types" for Computer Programming Theory before tomorrow's lab session.</p>
+                    </div>
+                    <button class="btn btn-outline btn-block" style="margin-top: 20px;">
+                        <i class="fas fa-play"></i> Start 25m Focus Timer
+                    </button>
+                </div>
+
+                <!-- Attendance Overview -->
+                <div class="card col-6 animate-in delay-3">
+                    <div class="card-header">
+                        <span class="card-title">Attendance Overview</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Calculus & Analytical Geometry</span>
+                            <span style="color: var(--sage-600); font-weight: 600;">92%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 92%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Functional English</span>
+                            <span style="color: var(--sage-600); font-weight: 600;">88%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 88%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Computer Programming</span>
+                            <span style="color: var(--sage-600); font-weight: 600;">85%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container" style="margin-bottom: 0;">
+                        <div class="progress-label">
+                            <span>AICT Lab</span>
+                            <span style="color: #B91C1C; font-weight: 600;">71%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: 71%; background: linear-gradient(90deg, #F87171, #EF4444);"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-outline btn-sm" style="margin-top: 20px;" onclick="openModal()">Report Absence</button>
+                </div>
+
+                <!-- Recent Results -->
+                <div class="card col-6 animate-in delay-3">
+                    <div class="card-header">
+                        <span class="card-title">Recent Assessments</span>
+                    </div>
+                    <table class="data-table" style="margin-bottom: 20px;">
+                        <tr>
+                            <td>Functional English Quiz 1</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--sage-700);">18/20</td>
+                        </tr>
+                        <tr>
+                            <td>Calculus Assignment 2</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--sage-700);">9/10</td>
+                        </tr>
+                        <tr>
+                            <td>Computer Programming Lab 1</td>
+                            <td style="text-align: right; font-weight: 600; color: var(--text-secondary);">15/20</td>
+                        </tr>
+                    </table>
+                    <div class="ai-insight">
+                        <div class="ai-insight-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <strong>AI Insight</strong>
+                        </div>
+                        <p>Excellent performance in Calculus! For Programming, review "Loop Structures" to improve your next lab grade.</p>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule -->
+                <div class="card col-12 animate-in delay-4">
+                    <div class="card-header">
+                        <span class="card-title">Today's Schedule</span>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Thursday, November 12, 2026</span>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Course</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Instructor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>08:30 – 10:00</td>
+                                <td><strong>Calculus & Analytical Geometry</strong></td>
+                                <td>Theory</td>
+                                <td>Room 101</td>
+                                <td>Prof. Zainab Ali</td>
+                            </tr>
+                            <tr>
+                                <td>10:00 – 11:30</td>
+                                <td><strong>Computer Programming Theory</strong></td>
+                                <td>Theory</td>
+                                <td>Lab 1</td>
+                                <td>Dr. Bilal Hassan</td>
+                            </tr>
+                            <tr style="background: var(--sage-50);">
+                                <td>11:30 – 01:00</td>
+                                <td colspan="4" style="text-align: center; color: var(--text-muted); font-style: italic;">
+                                    <i class="fas fa-coffee" style="margin-right: 8px;"></i> Prayer & Lunch Break
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>02:30 – 04:00</td>
+                                <td><strong>Computer Programming Lab</strong></td>
+                                <td>Practical</td>
+                                <td>Lab 1</td>
+                                <td>Dr. Bilal Hassan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="profile" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Profile</h1>
+                <p class="page-subtitle">Your personal and academic information</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">Personal Information</span></div>
+                    <table class="data-table">
+                        <tr><td width="30%"><strong>Full Name</strong></td><td>Muhsin Ali</td></tr>
+                        <tr><td><strong>Student ID</strong></td><td>FA26-BSAI-0069</td></tr>
+                        <tr><td><strong>Program</strong></td><td>BS Artificial Intelligence</td></tr>
+                        <tr><td><strong>Current Semester</strong></td><td>1st Semester</td></tr>
+                        <tr><td><strong>University Email</strong></td><td>fa26bsai0069@maju.edu.pk</td></tr>
+                        <tr><td><strong>Academic Advisor</strong></td><td>Dr. Sarah Malik</td></tr>
+                        <tr><td><strong>Enrollment Date</strong></td><td>September 2026</td></tr>
+                        <tr><td><strong>Current CGPA</strong></td><td style="color: var(--sage-600); font-weight: 600;">N/A (1st Semester)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- COURSES -->
+        <section id="courses" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Enrolled Courses</h1>
+                <p class="page-subtitle">Fall 2026 – 1st Semester</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header">
+                        <span class="card-title">Course List</span>
+                        <span class="badge badge-success">7 Courses</span>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Code</th><th>Course Name</th><th>Type</th><th>Credit Hours</th><th>Instructor</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>AICT-101</td><td><strong>AICT Theory</strong></td><td>Theory</td><td>3</td><td>Mr. Ahmed Khan</td></tr>
+                            <tr><td>AICT-101L</td><td><strong>AICT Lab</strong></td><td>Practical</td><td>1</td><td>Mr. Ahmed Khan</td></tr>
+                            <tr><td>CS-101</td><td><strong>Computer Programming Theory</strong></td><td>Theory</td><td>3</td><td>Dr. Bilal Hassan</td></tr>
+                            <tr><td>CS-101L</td><td><strong>Computer Programming Lab</strong></td><td>Practical</td><td>1</td><td>Dr. Bilal Hassan</td></tr>
+                            <tr><td>MATH-101</td><td><strong>Calculus & Analytical Geometry</strong></td><td>Theory</td><td>3</td><td>Prof. Zainab Ali</td></tr>
+                            <tr><td>ISL-101</td><td><strong>Islamic Studies</strong></td><td>Theory</td><td>2</td><td>Maulana Tariq</td></tr>
+                            <tr><td>ENG-101</td><td><strong>Functional English</strong></td><td>Theory</td><td>3</td><td>Ms. Hina Raza</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATTENDANCE -->
+        <section id="attendance" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Attendance</h1>
+                <p class="page-subtitle">Your class attendance record</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">November 2026</span></div>
+                    <table class="data-table">
+                        <thead><tr><th>Date</th><th>Course</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td>Nov 12, 2026</td><td>Calculus & Analytical Geometry</td><td><span class="badge badge-success">Present</span></td><td>-</td></tr>
+                            <tr><td>Nov 11, 2026</td><td>Functional English</td><td><span class="badge badge-success">Present</span></td><td>-</td></tr>
+                            <tr><td>Nov 10, 2026</td><td>AICT Lab</td><td><span class="badge badge-danger">Absent</span></td><td><button class="btn btn-primary btn-sm" onclick="openModal()">Resolve</button></td></tr>
+                            <tr><td>Nov 09, 2026</td><td>Computer Programming Theory</td><td><span class="badge badge-success">Present</span></td><td>-</td></tr>
+                            <tr><td>Nov 08, 2026</td><td>Islamic Studies</td><td><span class="badge badge-success">Present</span></td><td>-</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULTS -->
+        <section id="results" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Results</h1>
+                <p class="page-subtitle">Your academic performance</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">Midterm Assessments – Fall 2026</span></div>
+                    <table class="data-table">
+                        <thead><tr><th>Course</th><th>Total</th><th>Obtained</th><th>%</th><th>Grade</th><th>AI Feedback</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Calculus & Analytical Geometry</strong></td><td>30</td><td>27</td><td>90%</td><td><span class="badge badge-success">A</span></td><td style="font-size: 0.85rem; color: var(--text-secondary);">Excellent grasp of derivatives</td></tr>
+                            <tr><td><strong>Functional English</strong></td><td>20</td><td>18</td><td>90%</td><td><span class="badge badge-success">A</span></td><td style="font-size: 0.85rem; color: var(--text-secondary);">Strong vocabulary usage</td></tr>
+                            <tr><td><strong>Computer Programming Theory</strong></td><td>30</td><td>22</td><td>73%</td><td><span class="badge badge-warning">B+</span></td><td style="font-size: 0.85rem; color: #854D0E;">Review conditional statements</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TIMETABLE -->
+        <section id="timetable" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Time Table</h1>
+                <p class="page-subtitle">Weekly class schedule</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">Fall 2026 Schedule</span></div>
+                    <table class="data-table">
+                        <thead><tr><th>Time</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>08:30–10:00</strong></td><td>Calculus<br><small style="color:var(--text-muted)">Room 101</small></td><td>CP Theory<br><small style="color:var(--text-muted)">Lab 1</small></td><td>Calculus<br><small style="color:var(--text-muted)">Room 101</small></td><td>CP Theory<br><small style="color:var(--text-muted)">Lab 1</small></td></tr>
+                            <tr><td><strong>10:00–11:30</strong></td><td>AICT Theory<br><small style="color:var(--text-muted)">Room 204</small></td><td>Functional English<br><small style="color:var(--text-muted)">Room 302</small></td><td>AICT Theory<br><small style="color:var(--text-muted)">Room 204</small></td><td>Functional English<br><small style="color:var(--text-muted)">Room 302</small></td></tr>
+                            <tr><td><strong>11:30–01:00</strong></td><td>Islamic Studies<br><small style="color:var(--text-muted)">Room 105</small></td><td>AICT Lab<br><small style="color:var(--text-muted)">Lab 3</small></td><td>Islamic Studies<br><small style="color:var(--text-muted)">Room 105</small></td><td>AICT Lab<br><small style="color:var(--text-muted)">Lab 3</small></td></tr>
+                            <tr style="background: var(--sage-50);"><td><strong>01:00–02:30</strong></td><td colspan="4" style="text-align:center;color:var(--text-muted);font-style:italic;"><i class="fas fa-utensils" style="margin-right:8px;"></i> Prayer & Lunch Break</td></tr>
+                            <tr><td><strong>02:30–04:00</strong></td><td>CP Lab<br><small style="color:var(--text-muted)">Lab 1</small></td><td>-</td><td>CP Lab<br><small style="color:var(--text-muted)">Lab 1</small></td><td>-</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVOICES -->
+        <section id="invoices" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Invoices</h1>
+                <p class="page-subtitle">Fee payment history</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">Fee Records</span></div>
+                    <table class="data-table">
+                        <thead><tr><th>Challan No.</th><th>Month</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>CH-FA26-001</strong></td><td>November 2026</td><td>Rs. 85,000</td><td>Nov 15, 2026</td><td><span class="badge badge-warning">Unpaid</span></td><td><button class="btn btn-outline btn-sm">Download</button></td></tr>
+                            <tr><td><strong>CH-FA26-000</strong></td><td>October 2026</td><td>Rs. 85,000</td><td>Oct 15, 2026</td><td><span class="badge badge-success">Paid</span></td><td><button class="btn btn-outline btn-sm">Receipt</button></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIBRARY -->
+        <section id="library" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Library</h1>
+                <p class="page-subtitle">Your borrowed books</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">Currently Issued Books</span></div>
+                    <table class="data-table">
+                        <thead><tr><th>Book Title</th><th>Author</th><th>Issue Date</th><th>Due Date</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Introduction to Algorithms</strong></td><td>Thomas H. Cormen</td><td>Oct 28, 2026</td><td>Nov 28, 2026</td><td><span class="badge badge-success">Active</span></td></tr>
+                            <tr><td><strong>Calculus: Early Transcendentals</strong></td><td>James Stewart</td><td>Nov 01, 2026</td><td>Nov 15, 2026</td><td><span class="badge badge-warning">Due Soon</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOTIFICATIONS -->
+        <section id="notifications" class="page-section">
+            <div class="page-header">
+                <h1 class="page-title">Notifications</h1>
+                <p class="page-subtitle">Latest updates and announcements</p>
+            </div>
+            <div class="modular-grid">
+                <div class="card col-12 animate-in">
+                    <div class="card-header"><span class="card-title">Recent Notifications</span></div>
+                    <div style="border-left: 3px solid var(--sage-400); padding-left: 20px; margin-bottom: 28px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                            <strong style="color:var(--sage-700);">Fee Submission Reminder</strong>
+                            <span style="font-size:0.8rem;color:var(--text-muted);">Nov 11, 2026</span>
+                        </div>
+                        <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.7;">November fee challan is due on Nov 15, 2026. Please submit before the deadline to avoid late fees.</p>
+                    </div>
+                    <div style="border-left: 3px solid var(--sage-400); padding-left: 20px; margin-bottom: 28px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                            <strong style="color:var(--sage-700);">Midterm Results Published</strong>
+                            <span style="font-size:0.8rem;color:var(--text-muted);">Nov 10, 2026</span>
+                        </div>
+                        <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.7;">Your midterm results for Calculus, English, and Programming have been published. Check the Results section.</p>
+                    </div>
+                    <div style="border-left: 3px solid var(--sage-400); padding-left: 20px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                            <strong style="color:var(--sage-700);">Library Book Due</strong>
+                            <span style="font-size:0.8rem;color:var(--text-muted);">Nov 08, 2026</span>
+                        </div>
+                        <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.7;">"Calculus: Early Transcendentals" is due on Nov 15, 2026. Please renew or return before the due date.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="absenceModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Report Absence</h3>
+                <p>Let us know why you missed class so our AI can generate a personalized catch-up plan.</p>
+            </div>
+            <div class="form-group">
+                <label>Reason for Absence</label>
+                <select class="form-control" id="absenceReason">
+                    <option>Medical Emergency</option>
+                    <option>Family Emergency</option>
+                    <option>Official University Duty</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Additional Notes</label>
+                <textarea class="form-control" rows="3" placeholder="Briefly explain your situation..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" style="flex:1;" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" style="flex:1;" id="submitBtn" onclick="submitAbsence()">Submit</button>
+            </div>
+            <div id="aiResult" style="display:none;margin-top:28px;">
+                <div class="ai-insight" style="margin-top:0;background:linear-gradient(135deg,#FEF9C3,#FDE68A);border-left-color:#F59E0B;">
+                    <div class="ai-insight-header">
+                        <i class="fas fa-robot" style="color:#D97706;"></i>
+                        <strong style="color:#B45309;">AI Catch-Up Analysis</strong>
+                    </div>
+                    <p style="color:#78350F;">Reason noted. <strong>Alert:</strong> Prof. Ahmed conducted an interactive practical during this AICT Lab session that requires hands-on participation.</p>
+                </div>
+                <button class="btn btn-primary btn-block" style="margin-top:20px;">
+                    <i class="fas fa-calendar-plus"></i> Request Makeup Lab Session
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId, element) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            target.classList.add('active');
+            
+            // Reset animations for re-triggering
+            const cards = target.querySelectorAll('.animate-in');
+            cards.forEach((card, i) => {
+                card.style.animation = 'none';
+                card.offsetHeight; // Force reflow
+                card.style.animation = '';
+                card.className = `card ${card.className.split(' ').filter(c => !c.startsWith('delay')).join(' ')} animate-in delay-${(i % 5) + 1}`;
+            });
+
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            element.classList.add('active');
+            
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function openModal() {
+            document.getElementById('absenceModal').classList.add('active');
+            document.getElementById('aiResult').style.display = 'none';
+            document.getElementById('submitBtn').innerHTML = 'Submit';
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function closeModal() {
+            document.getElementById('absenceModal').classList.remove('active');
+        }
+
+        function submitAbsence() {
+            const btn = document.getElementById('submitBtn');
+            btn.innerHTML = '<span class="spinner"></span> Analyzing...';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Submitted';
+                document.getElementById('aiResult').style.display = 'block';
+                document.getElementById('aiResult').style.animation = 'scaleIn 0.5s ease-out';
+            }, 1500);
+        }
+
+        document.getElementById('absenceModal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        document.addEventListener('click', e => {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-toggle');
+            if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !toggle.contains(e.target) && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const w = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => bar.style.width = w, 400);
+            });
+        });
+    </script>
+</body>
+</html>
